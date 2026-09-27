@@ -100,109 +100,52 @@ public class SinglyLinkedList<E extends Comparable<E>> {
     }
 
     // write your codes here
-       public void swap(){
+    public void swap(){
         if (isEmpty()) {
             return;
         }
- 
-        List<E> entries = new ArrayList<>();
+
+        List<Node<E>> order = new ArrayList<>(size);
+        List<E> sortedOrder = new ArrayList<>(size);
         Node<E> current = head;
         while (current != null) {
-            entries.add(current.getElement());
+            order.add(current);
+            sortedOrder.add(current.getElement());
             current = current.getNext();
         }
-        Collections.sort(entries);
- 
-        int low = 0;
-        int high = entries.size() - 1;
- 
-        while (low < high) {
-            E lowValue = entries.get(low);
-            E highValue = entries.get(high);
+        Collections.sort(sortedOrder);
+        int n = order.size();
 
-            Node<E> prevSmall;
-            Node<E> small;
-            if (head.getElement().equals(lowValue)) {
-                prevSmall = null;
-                small = head;
-            } else {
-                prevSmall = head;
-                while (!prevSmall.getNext().getElement().equals(lowValue)) {
-                    prevSmall = prevSmall.getNext();
-                }
-                small = prevSmall.getNext();
-            }
-
-            Node<E> prevLarge;
-            Node<E> large;
-            if (head.getElement().equals(highValue)) {
-                prevLarge = null;
-                large = head;
-            } else {
-                prevLarge = head;
-                while (!prevLarge.getNext().getElement().equals(highValue)) {
-                    prevLarge = prevLarge.getNext();
-                }
-                large = prevLarge.getNext();
-            }
- 
-            if (small.getNext() == large) {
-                Node<E> largeNext = large.getNext();
-                if (prevSmall != null) {
-                    prevSmall.setNext(large); 
-                }
-                else {
-                    head = large;
-                }
-                large.setNext(small);
-                small.setNext(largeNext);
-                if (tail == large) {
-                    tail = small;
-                }
-            } else if (large.getNext() == small) {
-                Node<E> smallNext = small.getNext();
-                if (prevLarge != null) {
-                    prevLarge.setNext(small);
-                } 
-                else {
-                    head = small;
-                }
-                small.setNext(large);
-                large.setNext(smallNext);
-                if (tail == small) {
-                    tail = large;
-                }
-            } else {
-                Node<E> smallNext = small.getNext();
-                Node<E> largeNext = large.getNext();
- 
-                if (prevSmall != null) {
-                    prevSmall.setNext(large);
-                } 
-                else {
-                    head = large;
-                }
-                if (prevLarge != null) {
-                    prevLarge.setNext(small); 
-                }
-                else {
-                    head = small;
-                }
- 
-                small.setNext(largeNext);
-                large.setNext(smallNext);
- 
-                if (tail == small) {
-                    tail = large;
-                }
-                else if (tail == large) {
-                    tail = small;
+        Integer[] sortedPositions = new Integer[n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j<n; j++) {
+                if (sortedOrder.get(i).equals(order.get(j).getElement())) {
+                    sortedPositions [i] = j; 
                 }
             }
- 
-            low++;
-            high--;
         }
-    }   
 
+        int lo = 0, hi = n - 1;
+        while (lo < hi) {
+            int posOfSmall = sortedPositions[lo];
+            int posOfLarge = sortedPositions[hi];
+
+            Node<E> temp = order.get(posOfSmall);
+            order.set(posOfSmall, order.get(posOfLarge));
+            order.set(posOfLarge, temp);
+
+            lo++;
+            hi--;
+        }
+
+        head = order.get(0);
+        Node<E> prev = head;
+        for (int i = 1; i < n; i++) {
+            Node<E> next = order.get(i);
+            prev.setNext(next);
+            prev = next;
+        }
+        prev.setNext(null);
+        tail = prev;
+    }
 }
