@@ -100,37 +100,109 @@ public class SinglyLinkedList<E extends Comparable<E>> {
     }
 
     // write your codes here
-    public void swap(){
+       public void swap(){
+        if (isEmpty()) {
+            return;
+        }
+ 
+        List<E> entries = new ArrayList<>();
         Node<E> current = head;
-        List <E> entries = new ArrayList<>();
         while (current != null) {
             entries.add(current.getElement());
             current = current.getNext();
         }
         Collections.sort(entries);
+ 
         int low = 0;
-        int high = entries.size()-1;
-        while (low <= high) {
-            current = head;
-            while (current.getNext().getElement() != entries.get(low)) {
-                current = current.getNext();
-            }
-            Node<E> small = current.getNext();
-            Node<E> one_before_small = current;
-            current = head;
-            while (current.getNext().getElement() != entries.get(high)) {
-                current = current.getNext();
-            }
-            Node<E> large = current.getNext();
-            Node<E> one_before_large = current;
-            large.setNext(small.getNext());
-            small.setNext(large.getNext());
-            one_before_small.setNext(large);
-            one_before_large.setNext(small);
-            low ++;
-            high --;            
-        }
-    }
-   
-}
+        int high = entries.size() - 1;
+ 
+        while (low < high) {
+            E lowValue = entries.get(low);
+            E highValue = entries.get(high);
 
+            Node<E> prevSmall;
+            Node<E> small;
+            if (head.getElement().equals(lowValue)) {
+                prevSmall = null;
+                small = head;
+            } else {
+                prevSmall = head;
+                while (!prevSmall.getNext().getElement().equals(lowValue)) {
+                    prevSmall = prevSmall.getNext();
+                }
+                small = prevSmall.getNext();
+            }
+
+            Node<E> prevLarge;
+            Node<E> large;
+            if (head.getElement().equals(highValue)) {
+                prevLarge = null;
+                large = head;
+            } else {
+                prevLarge = head;
+                while (!prevLarge.getNext().getElement().equals(highValue)) {
+                    prevLarge = prevLarge.getNext();
+                }
+                large = prevLarge.getNext();
+            }
+ 
+            if (small.getNext() == large) {
+                Node<E> largeNext = large.getNext();
+                if (prevSmall != null) {
+                    prevSmall.setNext(large); 
+                }
+                else {
+                    head = large;
+                }
+                large.setNext(small);
+                small.setNext(largeNext);
+                if (tail == large) {
+                    tail = small;
+                }
+            } else if (large.getNext() == small) {
+                Node<E> smallNext = small.getNext();
+                if (prevLarge != null) {
+                    prevLarge.setNext(small);
+                } 
+                else {
+                    head = small;
+                }
+                small.setNext(large);
+                large.setNext(smallNext);
+                if (tail == small) {
+                    tail = large;
+                }
+            } else {
+                Node<E> smallNext = small.getNext();
+                Node<E> largeNext = large.getNext();
+ 
+                if (prevSmall != null) {
+                    prevSmall.setNext(large);
+                } 
+                else {
+                    head = large;
+                }
+                if (prevLarge != null) {
+                    prevLarge.setNext(small); 
+                }
+                else {
+                    head = small;
+                }
+ 
+                small.setNext(largeNext);
+                large.setNext(smallNext);
+ 
+                if (tail == small) {
+                    tail = large;
+                }
+                else if (tail == large) {
+                    tail = small;
+                }
+            }
+ 
+            low++;
+            high--;
+        }
+    }   
+
+}
